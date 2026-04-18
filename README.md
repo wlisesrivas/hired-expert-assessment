@@ -16,9 +16,10 @@ docker compose up --build
 
 | Service     | URL                          |
 |-------------|------------------------------|
-| Frontend    | http://localhost:5173        |
+| Admnistrator | http://localhost:8000/admin        |
 | Backend API | http://localhost:8000        |
 | Swagger UI  | http://localhost:8000/api/docs/ |
+| Frontend    | http://localhost:5173        |
 
 ---
 
