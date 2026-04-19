@@ -3,7 +3,7 @@ import logging
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.throttling import UserRateThrottle
 
 from . import services
 from .models import Product
@@ -18,7 +18,7 @@ def _ok(data=None, status=200):
     return Response({"success": True, "data": data, "error": None}, status=status)
 
 
-class _SearchThrottle(ScopedRateThrottle):
+class _SearchThrottle(UserRateThrottle):
     scope = "products_search"
 
 
