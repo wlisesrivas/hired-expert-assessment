@@ -1,6 +1,7 @@
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 
 from . import services
 from .models import Product
@@ -10,6 +11,10 @@ from .serializers import ProductSerializer
 
 def _ok(data=None, status=200):
     return Response({"success": True, "data": data, "error": None}, status=status)
+
+
+class _SearchThrottle(ScopedRateThrottle):
+    scope = "products_search"
 
 
 class ProductViewSet(
@@ -23,6 +28,11 @@ class ProductViewSet(
     permission_classes = [IsAuthenticated]
     serializer_class = ProductSerializer
     pagination_class = ProductPagination
+
+    def get_throttles(self):
+        if self.action == "list":
+            return [_SearchThrottle()]
+        return super().get_throttles()
 
     def get_queryset(self):
         return services.get_queryset(self.request.query_params)

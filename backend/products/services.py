@@ -6,7 +6,7 @@ def get_queryset(params):
 
     category = params.get("category")
     if category:
-        qs = qs.filter(category__iexact=category)
+        qs = qs.filter(category__icontains=category)
 
     is_active = params.get("is_active")
     if is_active is not None:
