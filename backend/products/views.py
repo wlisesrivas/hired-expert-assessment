@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,6 +9,9 @@ from . import services
 from .models import Product
 from .pagination import ProductPagination
 from .serializers import ProductSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 def _ok(data=None, status=200):
@@ -35,6 +40,7 @@ class ProductViewSet(
         return super().get_throttles()
 
     def get_queryset(self):
+        logger.info(f"Fetching products with params: {self.request.query_params}")
         return services.get_queryset(self.request.query_params)
 
     def list(self, request, *args, **kwargs):
@@ -43,12 +49,15 @@ class ProductViewSet(
         return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
+        logger.info(f"Fetching product with ID: {self.kwargs['pk']}")
         return _ok(self.get_serializer(self.get_object()).data)
 
     def create(self, request, *args, **kwargs):
+        logger.info(f"Creating product with data: {request.data}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         product = services.create(serializer.validated_data)
+        logger.info(f"Product created with ID: {product.id}")
         return _ok(ProductSerializer(product).data, status=201)
 
     def update(self, request, *args, **kwargs):
@@ -57,8 +66,10 @@ class ProductViewSet(
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         product = services.update(instance, serializer.validated_data)
+        logger.info(f"Product updated with ID: {product.id}")
         return _ok(ProductSerializer(product).data)
 
     def destroy(self, request, *args, **kwargs):
+        logger.info(f"Deleting product with ID: {self.kwargs['pk']}")
         services.soft_delete(self.get_object())
         return _ok()

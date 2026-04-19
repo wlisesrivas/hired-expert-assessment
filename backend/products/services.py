@@ -4,8 +4,7 @@ from .models import Product
 def get_queryset(params):
     qs = Product.objects.all()
 
-    category = params.get("category")
-    if category:
+    if category := params.get("category"):
         qs = qs.filter(category__icontains=category)
 
     is_active = params.get("is_active")
